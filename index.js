@@ -86,4 +86,15 @@ app.put('/api/genres/:id', (req, res) => {
     res.send(genres[index]);
 });
 
+app.delete('/api/genres/:id', (req, res) => {
+    const index = genres.findIndex((g) => g.id === parseInt(req.params.id));
+    if (index === -1) {
+        res.sendStatus(404);
+    }
+    const itemDeleted = genres[index];
+
+    genres.splice(index, 1);
+    res.send(itemDeleted);
+})
+
 app.listen(3000, () => console.log('Listening on port 3000.'));
