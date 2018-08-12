@@ -51,7 +51,39 @@ app.post('/api/genres', (req, res) => {
     }
     genres.push(genre);
 
-    res.send(req.body.genre);
+    res.send(genre);
+});
+
+app.put('/api/genres/:id', (req, res) => {
+
+    // search for specified genre
+    const index = genres.findIndex((g) => g.id === parseInt(req.params.id));
+
+    // check if genere exists
+    if (index === -1) {
+        res.sendStatus(404);
+        return;
+    }
+
+    // check if input has right format
+
+    const schema = {
+        genre : Joi.string().min(3).required()
+    };
+
+    var result = Joi.validate(req.body, schema);
+
+    if (result.error){
+        res.status(400).send('Error: ' + result.error);
+        return;
+    }
+
+    genres[index] = {
+        id : index + 1,
+        genre: req.body.genre 
+    };
+
+    res.send(genres[index]);
 });
 
 app.listen(3000, () => console.log('Listening on port 3000.'));
