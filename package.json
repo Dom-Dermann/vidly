@@ -3,8 +3,11 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "config": "^2.0.1",
+    "debug": "^3.1.0",
     "express": "^4.16.3",
-    "joi": "^13.5.2"
+    "joi": "^13.5.2",
+    "mongoose": "^5.2.9"
   },
   "devDependencies": {},
   "scripts": {
