@@ -45,7 +45,7 @@ async function getAllGenres(){
     return genres;
 }
 
-async function getSpecificCourse(id) {
+async function getSpecificGenre(id) {
     const genres = await Genre
         .find({_id: id});
     return genres;
@@ -69,6 +69,23 @@ async function createGenre(body){
 }
 
 
+// TODO: this function is where you left off
+async function updateGenre(id, newName) {
+    const genre = await Genre   
+        .findById('5b817642e455ce219c37a9aa', function (err, g) {
+            if (err) return err;
+
+            g.genre = newName;
+            g.save(function (err, updatedGenre) {
+                return updatedGenre;
+            });
+        });
+
+    return genre;
+}
+
+
+// create express routing operations
 router.get('/', (req, res) => {
     getAllGenres().then( (g) => {
         res.send(g);
@@ -76,7 +93,7 @@ router.get('/', (req, res) => {
 });
 
 router.get('/:id', (req, res) => {
-    getSpecificCourse(req.params.id)
+    getSpecificGenre(req.params.id)
         .then( (g) => {
             res.send(g);
         })
@@ -101,15 +118,6 @@ router.post('/', (req, res) => {
 
 router.put('/:id', (req, res) => {
 
-    // search for specified genre
-    const index = genres.findIndex((g) => g.id === parseInt(req.params.id));
-
-    // check if genere exists
-    if (index === -1) {
-        res.sendStatus(404);
-        return;
-    }
-
     // check if input has right format
     var result = checkSchema(req.body);
 
@@ -118,12 +126,9 @@ router.put('/:id', (req, res) => {
         return;
     }
 
-    genres[index] = {
-        id : index + 1,
-        genre: req.body.genre 
-    };
-
-    res.send(genres[index]);
+    updateGenre(req.params.id, req.body.genre)
+        .then((g) => res.send(g))
+        .catch((err) => res.send(err.message));
 });
 
 router.delete('/:id', (req, res) => {
