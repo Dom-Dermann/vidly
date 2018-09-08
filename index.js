@@ -12,6 +12,7 @@ const root = require('./routes/root');
 const customer = require('./routes/customers');
 const movie = require('./routes/movies');
 const rental = require('./routes/rentals');
+const user = require('./routes/users');
 
 // install middleware
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use('/', root);
 app.use('/api/customers', customer);
 app.use('/api/movies', movie);
 app.use('/api/rentals', rental);
+app.use('/api/users', user);
 
 // get the db host path
 const dbHost = config.get('Database.host');
