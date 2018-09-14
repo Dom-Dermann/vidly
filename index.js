@@ -33,4 +33,4 @@ mongoose.connect(dbHost)
     .catch( () => dbDebugger('Error connecting to database'));
 
 var port = process.env.port || 3000;
-app.listen(3000, () => exDebugger(`Listening on port ${port}.`));
+app.listen(3000, () => console.log(`Listening on port ${port}.`));

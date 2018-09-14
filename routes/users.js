@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const {User, validateUser, validatePasswordComplexity} = require('../models/user');
+const bcrypt = require('bcrypt');
 const _ = require('lodash'); // for object / array / string manipulation etc.
 
 router.post('/', async( req, res) => {
@@ -17,6 +18,9 @@ router.post('/', async( req, res) => {
     if (user) return res.status(400).send('A user with that email has already been registered.');
 
     user = new User(_.pick(req.body, ['name', 'email', 'password']));
+    // begin encryption by generating the salt and creating the hashed password
+    const salt = await bcrypt.genSalt(15);
+    user.password = await bcrypt.hash(user.password, salt);
 
     await user.save()
         .then( (u) => {
@@ -44,6 +48,7 @@ router.put('/:id', async (req, res) => {
         email: req.body.email,
         password: req.body.password
     }
+
     await user.save()
         .then( (u) => res.send(u))
         .catch ( (err) => {return res.status(500).send(err)});
