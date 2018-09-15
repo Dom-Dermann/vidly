@@ -4,6 +4,7 @@ const {User, validateUser, validatePasswordComplexity} = require('../models/user
 const bcrypt = require('bcrypt');
 const _ = require('lodash'); // for object / array / string manipulation etc.
 
+
 router.post('/', async( req, res) => {
     // validate user input
     const result = validateUser(req.body);
@@ -24,7 +25,9 @@ router.post('/', async( req, res) => {
 
     await user.save()
         .then( (u) => {
-            res.send(_.pick(u, ['_id', 'name', 'email']));
+            // automatically sign in user once they signed up for the service - user gets their JSON web token
+            const token = user.generateAuthToken();
+            res.header('x-auth-token', token).send(_.pick(u, ['_id', 'name', 'email']));
         })
         .catch ( (err) => {return res.status(500).send(err)});
 });
