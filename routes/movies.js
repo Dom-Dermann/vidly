@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const {Movie, validate} = require('../models/movie');
 const {Genre} = require('../models/genre');
+const auth = require('../middleware/auth');
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     // Joi validate client input
     const result = validate(req.body);
     if (result.error) {
@@ -45,7 +46,7 @@ router.get('/:id', async (req, res) => {
     });
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     const result = validate(req.body);
     if (result.error) return res.send(result.error.details[0].message);
 
@@ -60,7 +61,7 @@ router.put('/:id', async (req, res) => {
     });
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
     const result = validate(req.body);
     if (result.error) return res.send(result.error.details[0].message);
 

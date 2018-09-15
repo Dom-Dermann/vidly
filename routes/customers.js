@@ -3,6 +3,7 @@ const {Customer, validate} = require('../models/customer');
 const express = require('express');
 const router = express.Router();
 const dbDebugger = require('debug')('app:db');
+const auth = require('../middleware/auth');
 
 router.get('/', async (req, res) => {
     res.send(await Customer.find());
@@ -15,7 +16,7 @@ router.get('/:id', async (req, res) => {
     });
 })
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     const result = validate(req.body);
 
     if (result.error){
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
         .catch( (err) => {res.send(err)});
 })
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
     const result = validate(req.body);
     if (result.error) {
         res.status(400).send(result.error.details[0].message);
@@ -50,7 +51,7 @@ router.put('/:id', async (req, res) => {
     });
 })
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', auth, async(req, res) => {
     await Customer.findByIdAndRemove(req.params.id)
         .then( (c) => res.send(c))
         .catch( (err) => res.send(err));

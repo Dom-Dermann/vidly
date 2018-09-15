@@ -5,10 +5,11 @@ const mongoose = require('mongoose');
 const express = require('express');
 const router = express.Router();
 const Fawn = require('fawn');
+const auth = require('../middleware/auth');
 
 Fawn.init(mongoose);
 
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
     // test input with Joi
     const result = validateRentalJoi(req.body);
     if (result.error) return res.status(400).send(result.error.details[0].message);

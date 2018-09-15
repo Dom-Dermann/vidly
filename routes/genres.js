@@ -1,4 +1,5 @@
 // import modules
+const auth = require('../middleware/auth');
 const express = require('express');
 const router = express.Router();
 const {Genre, validate} = require('../models/genre');
@@ -57,10 +58,16 @@ async function deleteGenre(id) {
 
 
 // create express routing operations
-router.get('/', (req, res) => {
-    getAllGenres().then( (g) => {
-        res.send(g);
-    });
+router.get('/', async (req, res) => {
+    const genres = await Genre
+        .find()
+        .sort('genre')
+        .then((g) => {
+            res.send(g)
+        })
+        .catch((err) => {
+            res.send(err)
+        })
 });
 
 router.get('/:id', (req, res) => {
@@ -73,7 +80,8 @@ router.get('/:id', (req, res) => {
         });    
 });
 
-router.post('/', (req, res) => {
+router.post('/', auth, (req, res) => {
+    // check request body
     var result = validate(req.body);
 
     if (result.error) {
@@ -87,7 +95,7 @@ router.post('/', (req, res) => {
     });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', auth, (req, res) => {
 
     // check if input has right format
     var result = validate(req.body);
