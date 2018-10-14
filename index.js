@@ -1,6 +1,7 @@
 // import modules
 const config = require('config');
 const express = require('express');
+const winston = require('winston');
 const exDebugger = require('debug')('app:express');
 const dbDebugger = require('debug')('app:db');
 const mongoose = require('mongoose');
@@ -15,6 +16,19 @@ const rental = require('./routes/rentals');
 const user = require('./routes/users');
 const auth = require('./routes/auth');
 const error_handeler = require('./middleware/error');
+require('express-async-errors');
+
+winston.add(winston.transports.File, { filename: 'logfile.log' });
+
+process.on('uncaughtException', (ex) => {
+    winston.error(ex.message, ex);
+    process.exit(1);
+});
+
+process.on('unhandledRejection', (ex) => {
+    winston.error(ex.message, ex);
+    process.exit(1);
+});
 
 
 // get secrets from environment

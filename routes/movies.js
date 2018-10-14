@@ -3,9 +3,8 @@ const router = express.Router();
 const {Movie, validate} = require('../models/movie');
 const {Genre} = require('../models/genre');
 const auth = require('../middleware/auth');
-const asyncMiddleware = require('../middleware/async');
 
-router.post('/', auth, asyncMiddleware(async (req, res) => {
+router.post('/', auth, async (req, res) => {
     // Joi validate client input
     const result = validate(req.body);
     if (result.error) {
@@ -32,13 +31,14 @@ router.post('/', auth, asyncMiddleware(async (req, res) => {
     await movie.save()
         .then( (m) => res.send(m))
         .catch( (err) => res.send(err));
-}));
+});
 
-router.get('/', asyncMiddleware(async (req, res) => {
+router.get('/', async (req, res) => {
+    throw new Error('Could not get movies.');
     await Movie.find()
         .then( (m) => res.send(m))
         .catch( (err) => res.send(err));
-}));
+});
 
 router.get('/:id', async (req, res) => {
     await Movie.findById(req.params.id, function (err, m) {
