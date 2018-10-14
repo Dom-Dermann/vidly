@@ -3,9 +3,17 @@ const router = express.Router();
 const {User, validateUser, validatePasswordComplexity} = require('../models/user');
 const bcrypt = require('bcrypt');
 const _ = require('lodash'); // for object / array / string manipulation etc.
+const auth = require('../middleware/auth');
 
+// make sure user is logged in, really is the user he pretends to be and return the user
+router.get('/me', auth, async(req, res) => {
+    // id is not entered directly but comes from the JSON web token / users cannot pretend they are someone else
+    const user = await User.findById(req.user._id)
+        .select('-password');
+    res.send(user);
+})
 
-router.post('/', async( req, res) => {
+router.post('/', async( req, res, next) => {
     // validate user input
     const result = validateUser(req.body);
     if (result.error) return res.status(400).send(result.error.details[0].message);
@@ -29,7 +37,7 @@ router.post('/', async( req, res) => {
             const token = user.generateAuthToken();
             res.header('x-auth-token', token).send(_.pick(u, ['_id', 'name', 'email']));
         })
-        .catch ( (err) => {return res.status(500).send(err)});
+        .catch ( (err) => next(err) );
 });
 
 router.get('/', async (req, res) => {

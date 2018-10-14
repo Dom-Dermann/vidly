@@ -1,9 +1,8 @@
 // import modules
-const confi = require('config');
+const config = require('config');
 const express = require('express');
 const exDebugger = require('debug')('app:express');
 const dbDebugger = require('debug')('app:db');
-const config = require('config');
 const mongoose = require('mongoose');
 const app = express();
 const Joi = require('joi');
@@ -15,13 +14,14 @@ const movie = require('./routes/movies');
 const rental = require('./routes/rentals');
 const user = require('./routes/users');
 const auth = require('./routes/auth');
+const error_handeler = require('./middleware/error');
+
 
 // get secrets from environment
 if(!config.get('jwtPrivateKey')){
     console.log('FATAL ERROR: jwtPrivateKey not defined');
     process.exit(1);
 }
-
 
 // install middleware
 app.use(express.json());
@@ -32,6 +32,11 @@ app.use('/api/movies', movie);
 app.use('/api/rentals', rental);
 app.use('/api/users', user);
 app.use('/api/auth', auth);
+
+app.use(error_handeler);
+
+// use error middleware
+app.use(error_handeler);
 
 // get the db host path
 const dbHost = config.get('Database.host');
